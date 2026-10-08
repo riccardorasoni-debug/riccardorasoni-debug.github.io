@@ -1,0 +1,47 @@
+<dialog class="interest-dialog" data-interest-dialog aria-label="Personal interest">
+  <button class="interest-close" type="button" data-interest-close aria-label="Close">Close</button>
+
+  <section class="interest-panel reading-panel" data-interest-panel="reading" hidden>
+    <p class="kicker">Other interest · Reading</p>
+    <h2 class="visually-hidden">Reading</h2>
+    <blockquote>
+      <p>“Coincidere con chi si è diventati<br />credendo sia saggezza<br />è il più facile dei tradimenti<br />perché il suo castigo è nella pace”</p>
+      <cite>— Michele Mari, <em>Cento poesie d'amore a Ladyhawke</em></cite>
+    </blockquote>
+  </section>
+
+  <section class="interest-panel image-panel" data-interest-panel="photography" hidden>
+    <div class="interest-heading"><p class="kicker">Other interest · Photography</p><p>One of my photographs.</p></div>
+    <figure>
+      <img src="/images/photography-monument-valley-centered.webp" alt="Monument Valley photographed from an elevated viewpoint" width="1600" height="900" loading="lazy" />
+    </figure>
+  </section>
+
+  <section class="interest-panel image-panel trekking-panel" data-interest-panel="trekking" hidden>
+    <div class="interest-heading"><p class="kicker">Other interest · Trekking</p><p>Somewhere on the trail.</p></div>
+    <figure>
+      <img src="/images/trekking-sunset.webp" alt="Three hikers seen in silhouette at sunset" width="900" height="1125" loading="lazy" />
+    </figure>
+  </section>
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-interest-dialog]');
+  const panels = dialog?.querySelectorAll<HTMLElement>('[data-interest-panel]');
+
+  const showInterest = (kind: string) => {
+    if (!dialog || !panels) return;
+    panels.forEach(panel => { panel.hidden = panel.dataset.interestPanel !== kind; });
+    dialog.dataset.kind = kind;
+    dialog.showModal();
+  };
+
+  document.querySelectorAll<HTMLButtonElement>('[data-interest-open]').forEach(button => {
+    button.addEventListener('click', () => showInterest(button.dataset.interestOpen ?? ''));
+  });
+
+  dialog?.querySelector<HTMLButtonElement>('[data-interest-close]')?.addEventListener('click', () => dialog.close());
+  dialog?.addEventListener('click', event => {
+    if (event.target === dialog) dialog.close();
+  });
+</script>

@@ -1,0 +1,217 @@
+<dialog class="chess-dialog" data-chess-dialog aria-labelledby="chess-title">
+  <div class="chess-modal">
+    <button class="chess-close" type="button" data-chess-close aria-label="Close chess replay">Close</button>
+    <div class="chess-copy">
+      <p class="kicker">Other interest · Chess</p>
+      <h2 id="chess-title">My last victory</h2>
+      <p class="chess-status" data-chess-status>White to move.</p>
+      <div class="chess-meta" aria-label="Game information">
+        <span>1 + 1</span>
+        <span>23 moves</span>
+        <span>Checkmate</span>
+      </div>
+      <div class="chess-controls">
+        <button type="button" data-chess-toggle>Pause</button>
+        <button type="button" data-chess-restart>Replay</button>
+      </div>
+    </div>
+    <div class="chess-stage">
+      <div class="chess-board" data-chess-board role="img" aria-label="Animated chess game, viewed from White's side"></div>
+      <div class="chess-progress" aria-live="polite">
+        <span data-chess-count>0 / 45</span>
+        <strong data-chess-move>Ready</strong>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-chess-dialog]');
+  const board = dialog?.querySelector<HTMLElement>('[data-chess-board]');
+  const status = dialog?.querySelector<HTMLElement>('[data-chess-status]');
+  const count = dialog?.querySelector<HTMLElement>('[data-chess-count]');
+  const moveLabel = dialog?.querySelector<HTMLElement>('[data-chess-move]');
+  const toggle = dialog?.querySelector<HTMLButtonElement>('[data-chess-toggle]');
+  const restart = dialog?.querySelector<HTMLButtonElement>('[data-chess-restart]');
+  const close = dialog?.querySelector<HTMLButtonElement>('[data-chess-close]');
+
+  const symbols: Record<string, string> = {
+    wK: '♔', wQ: '♕', wR: '♖', wB: '♗', wN: '♘', wP: '♙',
+    bK: '♚', bQ: '♛', bR: '♜', bB: '♝', bN: '♞', bP: '♟',
+  };
+
+  const initialPieces = [
+    ...['a','b','c','d','e','f','g','h'].map((file, index) => ({ id: `wP${index}`, type: 'wP', square: `${file}2` })),
+    ...['a','b','c','d','e','f','g','h'].map((file, index) => ({ id: `bP${index}`, type: 'bP', square: `${file}7` })),
+    { id:'wRa', type:'wR', square:'a1' }, { id:'wNb', type:'wN', square:'b1' },
+    { id:'wBc', type:'wB', square:'c1' }, { id:'wQ', type:'wQ', square:'d1' },
+    { id:'wK', type:'wK', square:'e1' }, { id:'wBf', type:'wB', square:'f1' },
+    { id:'wNg', type:'wN', square:'g1' }, { id:'wRh', type:'wR', square:'h1' },
+    { id:'bRa', type:'bR', square:'a8' }, { id:'bNb', type:'bN', square:'b8' },
+    { id:'bBc', type:'bB', square:'c8' }, { id:'bQ', type:'bQ', square:'d8' },
+    { id:'bK', type:'bK', square:'e8' }, { id:'bBf', type:'bB', square:'f8' },
+    { id:'bNg', type:'bN', square:'g8' }, { id:'bRh', type:'bR', square:'h8' },
+  ];
+
+  const moves = [
+    ['d2','d4','1. d4'], ['d7','d5','1… d5'],
+    ['c1','f4','2. Bf4'], ['g8','f6','2… Nf6'],
+    ['e2','e3','3. e3'], ['c7','c5','3… c5'],
+    ['f1','d3','4. Bd3'], ['b8','c6','4… Nc6'],
+    ['c2','c3','5. c3'], ['c8','g4','5… Bg4'],
+    ['g1','f3','6. Nf3'], ['e7','e6','6… e6'],
+    ['e1','g1','7. O-O'], ['c5','d4','7… cxd4'],
+    ['c3','d4','8. cxd4'], ['f8','d6','8… Bd6'],
+    ['f4','d6','9. Bxd6'], ['d8','d6','9… Qxd6'],
+    ['d3','e2','10. Be2'], ['e8','g8','10… O-O'],
+    ['f3','e5','11. Ne5'], ['g4','e2','11… Bxe2'],
+    ['d1','e2','12. Qxe2'], ['c6','e5','12… Nxe5'],
+    ['d4','e5','13. dxe5'], ['d6','e5','13… Qxe5'],
+    ['b1','c3','14. Nc3'], ['a7','a6','14… a6'],
+    ['a1','c1','15. Rac1'], ['a8','c8','15… Rac8'],
+    ['f1','e1','16. Rfe1'], ['f8','d8','16… Rfd8'],
+    ['f2','f4','17. f4'], ['e5','d6','17… Qd6'],
+    ['e3','e4','18. e4'], ['d6','f4','18… Qxf4'],
+    ['e4','d5','19. exd5'], ['f6','d5','19… Nxd5'],
+    ['c3','d5','20. Nxd5'], ['e6','d5','20… exd5'],
+    ['c1','c8','21. Rxc8'], ['d8','c8','21… Rxc8'],
+    ['e2','e8','22. Qe8+'], ['c8','e8','22… Rxe8'],
+    ['e1','e8','23. Rxe8#'],
+  ] as const;
+
+  let pieces = initialPieces.map(piece => ({ ...piece, element: null as HTMLElement | null }));
+  let moveIndex = 0;
+  let timer: number | undefined;
+  let paused = false;
+  const speed = 333;
+  const files = 'abcdefgh';
+
+  const coordinates = (square: string) => ({
+    x: files.indexOf(square[0]) * 100,
+    y: (8 - Number(square[1])) * 100,
+  });
+
+  const setPiecePosition = (piece: typeof pieces[number]) => {
+    if (!piece.element) return;
+    const { x, y } = coordinates(piece.square);
+    piece.element.style.transform = `translate(${x}%, ${y}%)`;
+  };
+
+  const buildBoard = () => {
+    if (!board) return;
+    board.replaceChildren();
+    for (let rank = 8; rank >= 1; rank -= 1) {
+      for (const file of files) {
+        const square = document.createElement('span');
+        square.className = `chess-square ${(files.indexOf(file) + rank) % 2 === 1 ? 'dark' : 'light'}`;
+        square.dataset.square = `${file}${rank}`;
+        if (file === 'a') square.dataset.rank = String(rank);
+        if (rank === 1) square.dataset.file = file;
+        board.append(square);
+      }
+    }
+    pieces = initialPieces.map(piece => ({ ...piece, element: null as HTMLElement | null }));
+    pieces.forEach(piece => {
+      const element = document.createElement('span');
+      element.className = `chess-piece ${piece.type.startsWith('w') ? 'white-piece' : 'black-piece'}`;
+      element.textContent = symbols[piece.type];
+      element.setAttribute('aria-hidden', 'true');
+      piece.element = element;
+      board.append(element);
+      setPiecePosition(piece);
+    });
+  };
+
+  const clearHighlights = () => {
+    board?.querySelectorAll('.is-from, .is-to').forEach(square => square.classList.remove('is-from', 'is-to'));
+  };
+
+  const applyMove = (from: string, to: string) => {
+    const moving = pieces.find(piece => piece.square === from);
+    if (!moving) return;
+    const captured = pieces.find(piece => piece.square === to);
+    if (captured?.element) {
+      captured.element.classList.add('is-captured');
+      window.setTimeout(() => captured.element?.remove(), 170);
+      pieces = pieces.filter(piece => piece !== captured);
+    }
+    if (moving.type.endsWith('K') && Math.abs(files.indexOf(from[0]) - files.indexOf(to[0])) === 2) {
+      const rookFrom = to[0] === 'g' ? `h${from[1]}` : `a${from[1]}`;
+      const rookTo = to[0] === 'g' ? `f${from[1]}` : `d${from[1]}`;
+      const rook = pieces.find(piece => piece.square === rookFrom);
+      if (rook) {
+        rook.square = rookTo;
+        setPiecePosition(rook);
+      }
+    }
+    moving.square = to;
+    moving.element?.classList.add('is-moving');
+    setPiecePosition(moving);
+    window.setTimeout(() => moving.element?.classList.remove('is-moving'), 270);
+    clearHighlights();
+    board?.querySelector(`[data-square="${from}"]`)?.classList.add('is-from');
+    board?.querySelector(`[data-square="${to}"]`)?.classList.add('is-to');
+  };
+
+  const updateCopy = () => {
+    if (count) count.textContent = `${moveIndex} / ${moves.length}`;
+    if (moveIndex === moves.length) {
+      if (moveLabel) moveLabel.textContent = '23. Rxe8#';
+      if (status) status.textContent = 'Checkmate. 1–0.';
+      if (toggle) toggle.textContent = 'Replay';
+      return;
+    }
+    if (moveIndex > 0 && moveLabel) moveLabel.textContent = moves[moveIndex - 1][2];
+    if (status) status.textContent = moveIndex % 2 === 0 ? 'White to move.' : 'Black to move.';
+  };
+
+  const playNext = () => {
+    window.clearTimeout(timer);
+    if (paused || moveIndex >= moves.length) {
+      updateCopy();
+      return;
+    }
+    const [from, to] = moves[moveIndex];
+    applyMove(from, to);
+    moveIndex += 1;
+    updateCopy();
+    timer = window.setTimeout(playNext, speed);
+  };
+
+  const reset = (autoplay = true) => {
+    window.clearTimeout(timer);
+    moveIndex = 0;
+    paused = !autoplay;
+    buildBoard();
+    clearHighlights();
+    if (count) count.textContent = `0 / ${moves.length}`;
+    if (moveLabel) moveLabel.textContent = autoplay ? 'Starting…' : 'Ready';
+    if (status) status.textContent = 'White to move.';
+    if (toggle) toggle.textContent = autoplay ? 'Pause' : 'Play';
+    if (autoplay) timer = window.setTimeout(playNext, 500);
+  };
+
+  document.querySelectorAll<HTMLButtonElement>('[data-chess-open]').forEach(button => {
+    button.addEventListener('click', () => {
+      dialog?.showModal();
+      reset(true);
+    });
+  });
+
+  toggle?.addEventListener('click', () => {
+    if (moveIndex >= moves.length) {
+      reset(true);
+      return;
+    }
+    paused = !paused;
+    toggle.textContent = paused ? 'Play' : 'Pause';
+    if (!paused) playNext();
+  });
+
+  restart?.addEventListener('click', () => reset(true));
+  close?.addEventListener('click', () => dialog?.close());
+  dialog?.addEventListener('close', () => window.clearTimeout(timer));
+  dialog?.addEventListener('click', event => {
+    if (event.target === dialog) dialog.close();
+  });
+</script>

@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ChessReplay from '../components/ChessReplay.astro';
+import InterestGallery from '../components/InterestGallery.astro';
+import { SITE } from '../lib/site';
+---
+<BaseLayout title="About | Riccardo Rasoni" description="Biography and research interests of Riccardo Rasoni, Economics PhD candidate at the University of Padua.">
+  <section class="site-shell page-intro">
+    <p class="kicker">About</p>
+    <h1>I’m an economist interested in how people make sense of the economy.</h1>
+  </section>
+  <section class="site-shell about-grid">
+    <figure class="about-photo"><img src="/images/about-presentation.webp" alt="Riccardo Rasoni presenting his research" width="1500" height="1125" /></figure>
+    <div class="about-prose">
+      <p>My research focuses on how people form expectations about the economy, how these beliefs change with information and experience, and how households adjust their financial decisions in response to economic shocks.</p>
+      <p>I work primarily with survey data and econometric methods, connecting individual responses to broader macroeconomic questions.</p>
+      <p>Outside research, I enjoy <button class="inline-interest" type="button" data-interest-open="reading">reading</button>, <button class="inline-interest" type="button" data-interest-open="trekking">trekking</button>, <button class="inline-interest" type="button" data-chess-open>chess</button>, and <button class="inline-interest" type="button" data-interest-open="photography">photography</button>.</p>
+      <a class="quiet-link" href="/contact/">Get in touch <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+  <section class="site-shell timeline-section">
+    <div class="section-heading"><div><p class="kicker">Academic path</p><h2>Education and visits</h2></div><a class="quiet-link" href={`mailto:${SITE.email}?subject=CV%20request`}>Request full CV <span aria-hidden="true">→</span></a></div>
+    <div class="timeline"><div><span>2023 — 2027</span><h3>PhD in Economics</h3><p>University of Padua, Italy</p></div><div><span>2026</span><h3>Visiting student researcher</h3><p>University of Texas at Austin, United States</p></div><div><span>2019 — 2023</span><h3>Master’s degree in Economic Analysis</h3><p>Roma Tre University, Italy</p></div></div>
+  </section>
+  <InterestGallery />
+  <ChessReplay />
+</BaseLayout>

@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PaperCard from '../components/PaperCard.astro';
+import { getCollection } from 'astro:content';
+import { SITE } from '../lib/site';
+const papers = (await getCollection('papers')).filter(p => p.data.featured).sort((a,b)=>a.data.order-b.data.order);
+---
+<BaseLayout>
+  <section class="home-intro site-shell">
+    <figure class="home-portrait">
+      <img src="/images/riccardo-rasoni.webp" alt="Riccardo Rasoni at his desk" width="900" height="1125" />
+    </figure>
+    <div class="hero-copy">
+      <p class="kicker">Economics · Padua, Italy</p>
+      <h1>Riccardo Rasoni</h1>
+      <p class="hero-lead">I’m a PhD candidate in Economics at the University of Padua. I study how households form expectations, interpret economic information, and respond to change.</p>
+      <div class="intro-links">
+        <a href="/research/">Research <span aria-hidden="true">↗</span></a>
+        <a href="/about/">About <span aria-hidden="true">↗</span></a>
+        <a href={`mailto:${SITE.email}`}>Email <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </section>
+  <section class="site-shell home-section">
+    <div class="section-heading">
+      <div>
+        <p class="kicker">Selected work</p>
+        <h2>Research</h2>
+      </div>
+      <a class="quiet-link" href="/research/">View all <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="paper-list">{papers.map((paper) => <PaperCard paper={paper} />)}</div>
+  </section>
+</BaseLayout>

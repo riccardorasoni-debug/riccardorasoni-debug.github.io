@@ -1,0 +1,14 @@
+---
+import type { CollectionEntry } from 'astro:content';
+interface Props { paper: CollectionEntry<'papers'>; }
+const { paper } = Astro.props;
+const href = `/research/${paper.id}/`;
+---
+<article class="paper-card">
+  <div class="paper-card-year">{paper.data.year}</div>
+  <div class="paper-card-main">
+    <h3><a href={href}>{paper.data.title}<span class="paper-arrow" aria-hidden="true">→</span></a></h3>
+    <p>{paper.data.description}</p>
+    <div class="paper-meta"><span>{paper.data.category}</span><span class="paper-meta-sep" aria-hidden="true">·</span><span>{paper.data.status}</span></div>
+  </div>
+</article>

@@ -1,0 +1,17 @@
+---
+import { SITE } from '../lib/site';
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="site-shell footer-inner">
+    <div>
+      <strong>Riccardo Rasoni</strong>
+      <span>PhD candidate in Economics · University of Padua</span>
+    </div>
+    <div class="footer-links">
+      <a href={`mailto:${SITE.email}`}>Email</a>
+      <a href={SITE.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+    </div>
+    <span class="footer-year">© {year}</span>
+  </div>
+</footer>

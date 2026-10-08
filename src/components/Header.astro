@@ -1,0 +1,20 @@
+---
+const current = Astro.url.pathname;
+const items = [
+  { url: '/', text: 'Home' },
+  { url: '/research/', text: 'Research' },
+  { url: '/about/', text: 'About' },
+  { url: '/contact/', text: 'Contact' },
+];
+---
+<header class="site-header">
+  <div class="site-shell nav-inner">
+    <a class="brand" href="/" aria-label="Riccardo Rasoni, home">Riccardo Rasoni</a>
+    <nav class="nav-links" aria-label="Main navigation">
+      {items.map(({ url, text }) => (
+        <a href={url} aria-current={current === url ? 'page' : url !== '/' && current.startsWith(url) ? 'true' : undefined}>{text}</a>
+      ))}
+    </nav>
+    <button class="theme-button" type="button" data-theme-toggle aria-label="Toggle dark mode">☾</button>
+  </div>
+</header>

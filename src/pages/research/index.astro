@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PaperCard from '../../components/PaperCard.astro';
+import { getCollection } from 'astro:content';
+const papers = (await getCollection('papers')).sort((a,b)=>a.data.order-b.data.order);
+---
+<BaseLayout title="Research | Riccardo Rasoni" description="Research by Riccardo Rasoni on household expectations, macroeconomics, and survey econometrics.">
+  <section class="page-intro site-shell">
+    <p class="kicker">Research</p>
+    <h1>Working papers and ongoing projects.</h1>
+    <p>My research focuses on household expectations, survey design, and financial responses to economic shocks.</p>
+  </section>
+  <section class="site-shell research-page-list">
+    <div class="list-label"><span>{papers.length} projects</span><span>Selected research</span></div>
+    <div class="paper-list">{papers.map((paper)=><PaperCard paper={paper} />)}</div>
+  </section>
+  <section class="site-shell small-callout">
+    <span class="kicker">A note</span>
+    <p>Some projects are works in progress. Drafts and replication materials will be linked here when they are ready for public circulation.</p>
+  </section>
+</BaseLayout>

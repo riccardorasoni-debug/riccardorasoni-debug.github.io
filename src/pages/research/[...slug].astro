@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+export async function getStaticPaths() {
+  const papers = await getCollection('papers');
+  return papers.map((paper) => ({params: {slug: paper.id}, props: {paper}}));
+}
+interface Props { paper: CollectionEntry<'papers'>; }
+const { paper } = Astro.props;
+const { Content } = await render(paper);
+---
+<BaseLayout title={`${paper.data.title} | Riccardo Rasoni`} description={paper.data.description}>
+  <article class="site-shell paper-detail">
+    <a class="back-link" href="/research/">← Back to research</a>
+    <p class="kicker">{paper.data.category} · {paper.data.year}</p>
+    <h1>{paper.data.title}</h1>
+    <div class="detail-labels"><span class="detail-status">{paper.data.status}</span>{paper.data.coauthors.length > 0 && <span>With {paper.data.coauthors.join(', ')}</span>}</div>
+    <div class="detail-summary"><span class="kicker">Overview</span><p>{paper.data.description}</p></div>
+    <div class="detail-body"><Content /></div>
+    <div class="detail-bottom"><div class="paper-tags">{paper.data.keywords.map(k=><span>{k}</span>)}</div><div class="detail-actions">{paper.data.pdf && <a class="quiet-link" href={paper.data.pdf} target="_blank" rel="noopener noreferrer">Read paper ↗</a>}{paper.data.external && <a class="quiet-link" href={paper.data.external} target="_blank" rel="noopener noreferrer">External link ↗</a>}</div></div>
+  </article>
+</BaseLayout>

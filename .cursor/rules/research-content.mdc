@@ -1,0 +1,11 @@
+---
+description: Editing paper metadata and the research content collection
+globs: src/content/papers/**/*.md,src/content.config.ts,src/pages/research/**/*.astro
+alwaysApply: false
+---
+# Research content rules
+- Inspect the existing content schema before editing paper metadata.
+- Academic accuracy takes priority over marketing copy. Mark unfinished work as Work in progress and omit unpublished PDFs unless explicitly approved.
+- Keep text in English. Each paper needs a precise question, a concise approach, and a transparent status.
+- Do not fabricate findings or overstate causal identification.
+- Ensure metadata fields match Zod schema and generated research pages link correctly.

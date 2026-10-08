@@ -1,0 +1,14 @@
+---
+description: Site architecture, standards and publishing constraints
+alwaysApply: true
+---
+# Site engineering rules
+- This is a public academic personal website, built with Astro static output and native CSS.
+- Deployment targets the **user site** riccardorasoni-debug.github.io at the domain root. Do not add a `base` option unless publishing under a different repository path.
+- Research content comes from src/content/papers/*.md via Astro Content Collections; do not duplicate paper metadata in templates.
+- Pages must keep unique English titles, descriptions, canonical tags, and clean semantic HTML. Do not add noindex, client-only rendering, inaccessible menus, or unnecessary React dependencies.
+- Keep no more than minimal JavaScript needed for progressive enhancement. Respect reduced motion and mobile layouts.
+- Never invent publications, coauthors, awards, DOI, ORCID, affiliations, figures, or public manuscript URLs. Ask for confirmation before promoting drafts as published.
+- Never expose unpublished data, private code, survey records, or access tokens in the public repository.
+- For every substantive code change, run npm run build and report whether it passed. If dependencies are unavailable, say so rather than claiming success.
+- Use conventional commits on feature branches and open a pull request before merging major visual or content changes.
