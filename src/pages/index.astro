@@ -1,12 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PaperCard from '../components/PaperCard.astro';
-import { getCollection } from 'astro:content';
+import GithubIcon from '../components/GithubIcon.astro';
 import { SITE } from '../lib/site';
-const papers = (await getCollection('papers')).filter(p => p.data.featured).sort((a,b)=>a.data.order-b.data.order);
 ---
 <BaseLayout>
   <section class="home-intro site-shell">
+    <p class="home-statement"><em>I’m an economist interested in how people make sense of the economy.</em></p>
     <figure class="home-portrait">
       <img src="/images/riccardo-rasoni.webp" alt="Riccardo Rasoni at his desk" width="900" height="1125" />
     </figure>
@@ -14,21 +13,12 @@ const papers = (await getCollection('papers')).filter(p => p.data.featured).sort
       <p class="kicker">Economics · Padua, Italy</p>
       <h1>Riccardo Rasoni</h1>
       <p class="hero-lead">I’m a PhD candidate in Economics at the University of Padua. I study how households form expectations, interpret economic information, and respond to change.</p>
-      <div class="intro-links">
-        <a href="/research/">Research <span aria-hidden="true">↗</span></a>
-        <a href="/about/">About <span aria-hidden="true">↗</span></a>
-        <a href={`mailto:${SITE.email}`}>Email <span aria-hidden="true">↗</span></a>
-      </div>
+      <nav class="home-links" aria-label="Explore the website">
+        <a href="/research/"><span>Research</span><small>Working papers</small><b aria-hidden="true">↗</b></a>
+        <a href="/about/"><span>About</span><small>Profile and CV</small><b aria-hidden="true">↗</b></a>
+        <a href="/contact/"><span>Contact</span><small>Write to me</small><b aria-hidden="true">↗</b></a>
+        <a href={SITE.github} target="_blank" rel="noopener noreferrer"><span class="icon-label"><GithubIcon /> GitHub</span><small>Code profile</small><b aria-hidden="true">↗</b></a>
+      </nav>
     </div>
-  </section>
-  <section class="site-shell home-section">
-    <div class="section-heading">
-      <div>
-        <p class="kicker">Selected work</p>
-        <h2>Research</h2>
-      </div>
-      <a class="quiet-link" href="/research/">View all <span aria-hidden="true">→</span></a>
-    </div>
-    <div class="paper-list">{papers.map((paper) => <PaperCard paper={paper} />)}</div>
   </section>
 </BaseLayout>

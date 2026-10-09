@@ -1,14 +1,39 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import PeopleList from './PeopleList.astro';
 interface Props { paper: CollectionEntry<'papers'>; }
 const { paper } = Astro.props;
-const href = `/research/${paper.id}/`;
 ---
-<article class="paper-card">
-  <div class="paper-card-year">{paper.data.year}</div>
-  <div class="paper-card-main">
-    <h3><a href={href}>{paper.data.title}<span class="paper-arrow" aria-hidden="true">→</span></a></h3>
-    <p>{paper.data.description}</p>
-    <div class="paper-meta"><span>{paper.data.category}</span><span class="paper-meta-sep" aria-hidden="true">·</span><span>{paper.data.status}</span></div>
+<details class="paper-card">
+  <summary class="paper-card-summary">
+    {paper.data.image && (
+      <figure class="paper-card-image">
+        <img src={paper.data.image} alt={paper.data.imageAlt ?? ''} width="1440" height="960" loading="lazy" />
+      </figure>
+    )}
+    <div class="paper-card-main">
+      <div class="paper-card-top"><span>{paper.data.year}</span><span>{paper.data.availability}</span></div>
+      <h3>{paper.data.title}</h3>
+      {paper.data.coauthors.length > 0 && <p class="paper-coauthors"><PeopleList names={paper.data.coauthors} prefix="With " /></p>}
+      <p>{paper.data.description}</p>
+      <div class="paper-meta"><span>{paper.data.category}</span></div>
+      <span class="paper-expand">Read abstract <span aria-hidden="true"></span></span>
+    </div>
+  </summary>
+  <div class="paper-card-details">
+    <div class="paper-abstract">
+      <p class="kicker">Abstract</p>
+      <p>{paper.data.abstract}</p>
+    </div>
+    <div class="paper-data">
+      <div>
+        <p class="kicker">JEL codes</p>
+        <div class="paper-tags">{paper.data.jelCodes.map((code) => <span>{code}</span>)}</div>
+      </div>
+      <div>
+        <p class="kicker">Keywords</p>
+        <div class="paper-tags">{paper.data.keywords.map((keyword) => <span>{keyword}</span>)}</div>
+      </div>
+    </div>
   </div>
-</article>
+</details>

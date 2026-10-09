@@ -1,13 +1,15 @@
-<dialog class="interest-dialog" data-interest-dialog aria-label="Personal interest">
+---
+import { BOOKS } from '../lib/books';
+---
+<dialog class="interest-dialog" data-interest-dialog data-books={JSON.stringify(BOOKS)} aria-label="Personal interest">
   <button class="interest-close" type="button" data-interest-close aria-label="Close">Close</button>
 
   <section class="interest-panel reading-panel" data-interest-panel="reading" hidden>
     <p class="kicker">Other interest · Reading</p>
-    <h2 class="visually-hidden">Reading</h2>
-    <blockquote>
-      <p>“Coincidere con chi si è diventati<br />credendo sia saggezza<br />è il più facile dei tradimenti<br />perché il suo castigo è nella pace”</p>
-      <cite>— Michele Mari, <em>Cento poesie d'amore a Ladyhawke</em></cite>
-    </blockquote>
+    <h2>Three books for right now.</h2>
+    <p class="reading-intro">Picked at random from my shelf.</p>
+    <ol class="book-suggestions" data-book-suggestions aria-live="polite"></ol>
+    <button class="book-refresh" type="button" data-book-refresh>Suggest three more <span aria-hidden="true">↻</span></button>
   </section>
 
   <section class="interest-panel image-panel" data-interest-panel="photography" hidden>
@@ -28,11 +30,37 @@
 <script>
   const dialog = document.querySelector<HTMLDialogElement>('[data-interest-dialog]');
   const panels = dialog?.querySelectorAll<HTMLElement>('[data-interest-panel]');
+  const bookList = dialog?.querySelector<HTMLOListElement>('[data-book-suggestions]');
+  const books = JSON.parse(dialog?.dataset.books ?? '[]') as [string, string][];
+  let previousTitles: string[] = [];
+
+  const refreshBooks = () => {
+    if (!bookList) return;
+    const pool = books.filter(([title]) => !previousTitles.includes(title));
+    const source = pool.length >= 3 ? pool : books;
+    const shuffled = [...source];
+    for (let i = shuffled.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    const picks = shuffled.slice(0, 3);
+    previousTitles = picks.map(([title]) => title);
+    bookList.replaceChildren(...picks.map(([title, author]) => {
+      const item = document.createElement('li');
+      const bookTitle = document.createElement('strong');
+      const bookAuthor = document.createElement('span');
+      bookTitle.textContent = title;
+      bookAuthor.textContent = author;
+      item.append(bookTitle, bookAuthor);
+      return item;
+    }));
+  };
 
   const showInterest = (kind: string) => {
     if (!dialog || !panels) return;
     panels.forEach(panel => { panel.hidden = panel.dataset.interestPanel !== kind; });
     dialog.dataset.kind = kind;
+    if (kind === 'reading') refreshBooks();
     dialog.showModal();
   };
 
@@ -41,6 +69,7 @@
   });
 
   dialog?.querySelector<HTMLButtonElement>('[data-interest-close]')?.addEventListener('click', () => dialog.close());
+  dialog?.querySelector<HTMLButtonElement>('[data-book-refresh]')?.addEventListener('click', refreshBooks);
   dialog?.addEventListener('click', event => {
     if (event.target === dialog) dialog.close();
   });

@@ -12,8 +12,15 @@ const person = {
   name: SITE.name,
   url: SITE.url,
   jobTitle: 'PhD Candidate in Economics',
-  email: `mailto:${SITE.email}`,
+  email: [`mailto:${SITE.email}`, `mailto:${SITE.personalEmail}`],
   affiliation: { '@type': 'CollegeOrUniversity', name: SITE.institution },
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: SITE.streetAddress,
+    postalCode: SITE.postalCode,
+    addressLocality: SITE.city,
+    addressCountry: SITE.country,
+  },
   sameAs: [SITE.github],
   knowsAbout: ['Macroeconomics', 'Survey Analysis', 'Household Expectations'],
 };

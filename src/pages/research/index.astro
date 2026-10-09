@@ -1,21 +1,50 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PaperCard from '../../components/PaperCard.astro';
+import PeopleList from '../../components/PeopleList.astro';
 import { getCollection } from 'astro:content';
 const papers = (await getCollection('papers')).sort((a,b)=>a.data.order-b.data.order);
+const developing = [
+  {
+    stage: 'Preregistered project',
+    title: 'Household Responses to Unexpected Income Shocks',
+    people: ['Alessia Russo', 'Francesco Lancia', 'Jessica Piccolo'],
+    description: 'A survey experiment on how households allocate unexpected gains and losses across spending, saving, debt, and transfers.',
+  },
+  {
+    stage: 'Early-stage project',
+    title: 'Information Updating in Repeated Household Surveys',
+    people: [],
+    description: 'A new project on whether familiarity with a survey changes how households process and revise economic beliefs.',
+  },
+];
 ---
 <BaseLayout title="Research | Riccardo Rasoni" description="Research by Riccardo Rasoni on household expectations, macroeconomics, and survey econometrics.">
   <section class="page-intro site-shell">
-    <p class="kicker">Research</p>
-    <h1>Working papers and ongoing projects.</h1>
+    <h1>Research</h1>
     <p>My research focuses on household expectations, survey design, and financial responses to economic shocks.</p>
   </section>
   <section class="site-shell research-page-list">
-    <div class="list-label"><span>{papers.length} projects</span><span>Selected research</span></div>
+    <h2 class="research-list-title">Working papers</h2>
     <div class="paper-list">{papers.map((paper)=><PaperCard paper={paper} />)}</div>
+  </section>
+  <section class="site-shell developing-research">
+    <div class="section-heading">
+      <h2>Research in development</h2>
+    </div>
+    <div class="developing-list">
+      {developing.map((project) => (
+        <article class="developing-card">
+          <p class="kicker">{project.stage}</p>
+          <h3>{project.title}</h3>
+          {project.people.length > 0 && <p class="paper-coauthors"><PeopleList names={project.people} prefix="With " /></p>}
+          <p>{project.description}</p>
+        </article>
+      ))}
+    </div>
   </section>
   <section class="site-shell small-callout">
     <span class="kicker">A note</span>
-    <p>Some projects are works in progress. Drafts and replication materials will be linked here when they are ready for public circulation.</p>
+    <p>These brief project descriptions refer to ongoing, non-public work. Please do not reproduce or circulate the ideas or materials without permission. Public drafts and replication files will be linked here or on SSRN when they are ready.</p>
   </section>
 </BaseLayout>

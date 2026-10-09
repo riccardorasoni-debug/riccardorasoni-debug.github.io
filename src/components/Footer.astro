@@ -1,5 +1,6 @@
 ---
 import { SITE } from '../lib/site';
+import GithubIcon from './GithubIcon.astro';
 const year = new Date().getFullYear();
 ---
 <footer class="site-footer">
@@ -7,10 +8,12 @@ const year = new Date().getFullYear();
     <div>
       <strong>Riccardo Rasoni</strong>
       <span>PhD candidate in Economics · University of Padua</span>
+      <address>{SITE.department}<br />{SITE.streetAddress} · {SITE.postalCode} {SITE.city}, {SITE.country}</address>
     </div>
     <div class="footer-links">
-      <a href={`mailto:${SITE.email}`}>Email</a>
-      <a href={SITE.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href={`mailto:${SITE.email}`}>Institutional email</a>
+      <a href={`mailto:${SITE.personalEmail}`}>Personal email</a>
+      <a class="icon-label" href={SITE.github} target="_blank" rel="noopener noreferrer"><GithubIcon /> GitHub</a>
     </div>
     <span class="footer-year">© {year}</span>
   </div>

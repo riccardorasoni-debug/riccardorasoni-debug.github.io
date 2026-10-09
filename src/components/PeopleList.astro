@@ -1,0 +1,23 @@
+---
+import { personUrl } from '../lib/people';
+
+interface Props {
+  names: string[];
+  prefix?: string;
+}
+
+const { names, prefix = '' } = Astro.props;
+const separatorAfter = (index: number) => {
+  if (index >= names.length - 1) return '';
+  if (names.length === 2) return ' and ';
+  return index === names.length - 2 ? ', and ' : ', ';
+};
+---
+{prefix}{names.map((name, index) => (
+  <>
+    {personUrl(name) ? (
+      <a class="person-link" href={personUrl(name)} target="_blank" rel="noopener noreferrer">{name}</a>
+    ) : name}
+    {separatorAfter(index)}
+  </>
+))}

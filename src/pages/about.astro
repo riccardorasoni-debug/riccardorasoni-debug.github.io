@@ -2,25 +2,80 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ChessReplay from '../components/ChessReplay.astro';
 import InterestGallery from '../components/InterestGallery.astro';
-import { SITE } from '../lib/site';
+import { PEOPLE } from '../lib/people';
+
+const events = [
+  {
+    date: '17 Sep 2026',
+    title: '2nd Padova Workshop on Macroeconomic Expectations',
+    role: 'Organizer and poster presenter',
+    place: 'University of Padua',
+  },
+  {
+    date: '21 May 2026',
+    title: 'California–Michigan–Texas Conference on Expectations and Behavior',
+    role: 'Attendee',
+    place: 'University of Texas at Austin',
+  },
+  {
+    date: '18 Sep 2025',
+    title: '1st Padova Workshop on Macroeconomic Expectations',
+    role: 'Organizer',
+    place: 'University of Padua',
+  },
+  {
+    date: '16–22 Jun 2025',
+    title: '16th BESLab Experimental Economics Summer School in Macroeconomics',
+    role: 'Participant · Workshop on Theoretical and Experimental Macroeconomics, 19–20 June',
+    place: 'Universitat Pompeu Fabra, Barcelona',
+  },
+  {
+    date: '9–10 Jun 2025',
+    title: '8th Workshop on Subjective Expectations',
+    role: 'Attendee',
+    place: 'Nova School of Business and Economics, Lisbon',
+  },
+];
 ---
 <BaseLayout title="About | Riccardo Rasoni" description="Biography and research interests of Riccardo Rasoni, Economics PhD candidate at the University of Padua.">
   <section class="site-shell page-intro">
     <p class="kicker">About</p>
-    <h1>I’m an economist interested in how people make sense of the economy.</h1>
+    <h1>About my research and interests.</h1>
   </section>
   <section class="site-shell about-grid">
     <figure class="about-photo"><img src="/images/about-presentation.webp" alt="Riccardo Rasoni presenting his research" width="1500" height="1125" /></figure>
     <div class="about-prose">
       <p>My research focuses on how people form expectations about the economy, how these beliefs change with information and experience, and how households adjust their financial decisions in response to economic shocks.</p>
       <p>I work primarily with survey data and econometric methods, connecting individual responses to broader macroeconomic questions.</p>
+      <p>My doctoral supervisors are <a class="person-link" href={PEOPLE['Efrem Castelnuovo']} target="_blank" rel="noopener noreferrer">Efrem Castelnuovo</a> and <a class="person-link" href={PEOPLE['Alessia Russo']} target="_blank" rel="noopener noreferrer">Alessia Russo</a>.</p>
       <p>Outside research, I enjoy <button class="inline-interest" type="button" data-interest-open="reading">reading</button>, <button class="inline-interest" type="button" data-interest-open="trekking">trekking</button>, <button class="inline-interest" type="button" data-chess-open>chess</button>, and <button class="inline-interest" type="button" data-interest-open="photography">photography</button>.</p>
       <a class="quiet-link" href="/contact/">Get in touch <span aria-hidden="true">→</span></a>
     </div>
   </section>
   <section class="site-shell timeline-section">
-    <div class="section-heading"><div><p class="kicker">Academic path</p><h2>Education and visits</h2></div><a class="quiet-link" href={`mailto:${SITE.email}?subject=CV%20request`}>Request full CV <span aria-hidden="true">→</span></a></div>
-    <div class="timeline"><div><span>2023 — 2027</span><h3>PhD in Economics</h3><p>University of Padua, Italy</p></div><div><span>2026</span><h3>Visiting student researcher</h3><p>University of Texas at Austin, United States</p></div><div><span>2019 — 2023</span><h3>Master’s degree in Economic Analysis</h3><p>Roma Tre University, Italy</p></div></div>
+    <div class="section-heading"><div><p class="kicker">Academic path</p><h2>Education and visits</h2></div></div>
+    <div class="timeline"><div><span>2023 — 2027</span><h3>PhD in Economics</h3><p>University of Padua, Italy</p></div><div><span>Jan — Jun 2026</span><h3>Visiting PhD student researcher</h3><p>University of Texas at Austin, hosted by Professor <a class="person-link" href={PEOPLE['Olivier Coibion']} target="_blank" rel="noopener noreferrer">Olivier Coibion</a></p></div><div><span>2019 — 2023</span><h3>Master’s degree in Economic Analysis</h3><p>Roma Tre University, Italy</p></div></div>
+    <a class="cv-download" href="/Riccardo-Rasoni-CV.pdf" target="_blank" rel="noopener noreferrer"><span>Curriculum vitae</span><strong>Open PDF</strong><b aria-hidden="true">↗</b></a>
+  </section>
+  <section class="site-shell conference-section">
+    <div class="section-heading"><div><p class="kicker">Academic events</p><h2>Selected conferences and workshops</h2></div></div>
+    <div class="conference-list">
+      {events.map((event) => (
+        <article>
+          <span>{event.date}</span>
+          <div>
+            <h3>{event.title}</h3>
+            <p><strong>{event.role}</strong> · {event.place}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+  <section class="site-shell service-section">
+    <div class="section-heading"><div><p class="kicker">Academic service</p><h2>Referee experience</h2></div></div>
+    <div class="service-list">
+      <div><h3>Journal of International Forecasting</h3><span>Referee</span></div>
+    </div>
   </section>
   <InterestGallery />
   <ChessReplay />
